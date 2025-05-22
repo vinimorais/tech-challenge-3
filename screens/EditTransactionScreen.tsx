@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, Alert, StyleSheet, ScrollView, Image } from 'react-native';
 import { db } from '../firebaseConfig';
 import { collection, query, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import ImageUploadComponent from '../components/ImageUploadComponent'; 
 
 const TransactionScreen = ({ navigation }: any) => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -10,6 +11,7 @@ const TransactionScreen = ({ navigation }: any) => {
   const [valor, setValor] = useState('');
   const [categoria, setCategoria] = useState('');
   const [tipo, setTipo] = useState('');
+  const [comprovanteUrl, setComprovanteUrl] = useState<string | null>(null);
 
   const fetchTransactions = async () => {
     const transactionsRef = collection(db, 'transactions');
@@ -33,6 +35,7 @@ const TransactionScreen = ({ navigation }: any) => {
       valor: parseFloat(valor),
       categoria,
       tipo,
+      comprovanteUrl, 
     };
 
     try {
@@ -63,6 +66,7 @@ const TransactionScreen = ({ navigation }: any) => {
     setValor(transaction.valor.toString());
     setCategoria(transaction.categoria);
     setTipo(transaction.tipo);
+    setComprovanteUrl(transaction.comprovanteUrl || null);
   };
 
   useEffect(() => {
@@ -118,6 +122,17 @@ const TransactionScreen = ({ navigation }: any) => {
             placeholder="Tipo"
             style={styles.input}
           />
+
+          {/* Exibir a imagem, caso exista */}
+          {comprovanteUrl && (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: comprovanteUrl }} style={styles.image} />
+            </View>
+          )}
+
+          {/* Componente de Upload de Imagem */}
+          <ImageUploadComponent onUploadSuccess={setComprovanteUrl} />
+
           <Button title="Salvar" onPress={handleEditTransaction} />
           <Button title="Cancelar" onPress={() => setSelectedTransaction(null)} color="#757575" />
         </ScrollView>
@@ -192,6 +207,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: '#f9f9f9',
+  },
+  imageContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+    borderRadius: 8,
   },
 });
 
