@@ -39,3 +39,11 @@ Repositório oficial: [github.com/vinimorais/tech-challenge-3](https://github.co
 ```bash
 git clone https://github.com/vinimorais/tech-challenge-3.git
 cd tech-challenge-3
+```
+2. instale as dependencias 
+```bash
+npm install 
+```
+3. inicie o projeto: 
+```bash
+npx expo start
